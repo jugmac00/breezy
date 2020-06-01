@@ -32,7 +32,6 @@ from ...propose import hosters
 hosters.register_lazy(
     "launchpad", "breezy.plugins.propose.launchpad",
     "Launchpad")
-hosters.register_lazy(
 
 
 def test_suite():
