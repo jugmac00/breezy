@@ -79,7 +79,7 @@ class ResponseFile(object):
         return data
 
     def readlines(self, size=None):
-        data = self._file.readlines(size)
+        data = self._file.readlines()
         self._pos += sum(map(len, data))
         return data
 
