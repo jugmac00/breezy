@@ -23,9 +23,6 @@ from .. import (
     )
 
 
-BLACKLISTED_HOSTS = ['git.dgit.debian.org']
-
-
 class BzrProber(controldir.Prober):
     """Prober for formats that use a .bzr/ control directory."""
 
@@ -80,8 +77,6 @@ class RemoteBzrProber(controldir.Prober):
     @classmethod
     def probe_transport(klass, transport):
         """Return a RemoteBzrDirFormat object if it looks possible."""
-        if getattr(transport, '_host', None) in BLACKLISTED_HOSTS:
-            raise errors.NotBranchError(path=transport.base)
         try:
             medium = transport.get_smart_medium()
         except (NotImplementedError, AttributeError,
