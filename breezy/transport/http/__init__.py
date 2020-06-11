@@ -1700,9 +1700,9 @@ class HTTPErrorProcessor(urllib_request.HTTPErrorProcessor):
                        403,
                        404,  # Not found
                        405,  # Method not allowed
-                       409,
-                       416,
-                       422,
+                       409,  # Conflict
+                       416,  # Range not satisfiable
+                       422,  # Unprocessible entity
                        501,  # Not implemented
                        ]
     """The error codes the caller will handle.
