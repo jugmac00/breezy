@@ -361,7 +361,7 @@ class Conflict(object):
         # Stanza is purely a Unicode api.
         if isinstance(file_id, str):
             file_id = cache_utf8.encode(file_id)
-        self.file_id = osutils.safe_file_id(file_id)
+        self.file_id = file_id
 
     def as_stanza(self):
         s = rio.Stanza(type=self.typestring, path=self.path)
@@ -735,7 +735,7 @@ class HandledPathConflict(HandledConflict):
         # so they can be unicode.
         if isinstance(conflict_file_id, str):
             conflict_file_id = cache_utf8.encode(conflict_file_id)
-        self.conflict_file_id = osutils.safe_file_id(conflict_file_id)
+        self.conflict_file_id = conflict_file_id
 
     def _cmp_list(self):
         return HandledConflict._cmp_list(self) + [self.conflict_path,

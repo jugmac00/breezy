@@ -38,6 +38,8 @@ Improvements
  * A new method ``MergeProposal.get_source_revision`` has been added.
    (Jelmer Vernooĳ)
 
+ * Add support for HTTP response code 308. (Jelmer Vernooĳ)
+
 Bug Fixes
 *********
 
@@ -60,6 +62,9 @@ API Changes
 
  * ``BzrCommandError`` has been renamed to ``CommandError``.
    (Jelmer Vernooĳ)
+
+ * The ``osutils.safe_file_id`` and ``osutils.safe_revision_id`` methods
+   have been removed. (Jelmer Vernooĳ)
 
 Internals
 *********
