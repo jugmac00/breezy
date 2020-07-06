@@ -718,6 +718,10 @@ class GitRevisionTree(revisiontree.RevisionTree):
                         file_id, mode_kind(mode)))
             yield (path_decoded, parent_id), children
 
+    def preview_transform(self, pb=None):
+        from .transform import GitTransformPreview
+        return GitTransformPreview(self, pb=pb)
+
 
 def tree_delta_from_git_changes(changes, mappings,
                                 specific_files=None,
@@ -1625,9 +1629,12 @@ class MutableGitIndexTree(mutabletree.MutableTree):
         raise NotImplementedError(self._live_entry)
 
     def transform(self, pb=None):
-        from ..transform import TreeTransform
-        return TreeTransform(self, pb=pb)
+        from .transform import GitTreeTransform
+        return GitTreeTransform(self, pb=pb)
 
+    def preview_transform(self, pb=None):
+        from .transform import GitTransformPreview
+        return GitTransformPreview(self, pb=pb)
 
 
 class InterToIndexGitTree(InterGitTrees):

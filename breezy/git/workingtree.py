@@ -54,7 +54,6 @@ from .. import (
     controldir as _mod_controldir,
     globbing,
     lock,
-    merge,
     osutils,
     revision as _mod_revision,
     trace,
@@ -221,10 +220,6 @@ class GitWorkingTree(MutableGitIndexTree, workingtree.WorkingTree):
             self.case_sensitive = True
         else:
             self.case_sensitive = False
-
-    def transform(self, pb=None):
-        from ..transform import TreeTransform
-        return TreeTransform(self, pb=pb)
 
     def merge_modified(self):
         return {}
@@ -1073,8 +1068,8 @@ class GitWorkingTree(MutableGitIndexTree, workingtree.WorkingTree):
     def store_uncommitted(self):
         raise errors.StoringUncommittedNotSupported(self)
 
-    def apply_inventory_delta(self, changes):
-        for (old_path, new_path, file_id, ie) in changes:
+    def _apply_transform_delta(self, changes):
+        for (old_path, new_path, ie) in changes:
             if old_path is not None:
                 (index, old_subpath) = self._lookup_index(
                     encode_git_path(old_path))
@@ -1205,6 +1200,7 @@ class GitWorkingTree(MutableGitIndexTree, workingtree.WorkingTree):
             show_base=False):
         basis_tree = self.revision_tree(old_revision)
         if new_revision != old_revision:
+            from .. import merge
             with basis_tree.lock_read():
                 new_basis_tree = self.branch.basis_tree()
                 merge.merge_inner(
@@ -1313,6 +1309,7 @@ class GitWorkingTree(MutableGitIndexTree, workingtree.WorkingTree):
 
     def copy_content_into(self, tree, revision_id=None):
         """Copy the current content and user files of this tree into tree."""
+        from .. import merge
         with self.lock_read():
             if revision_id is None:
                 merge.transform_tree(tree, self)
