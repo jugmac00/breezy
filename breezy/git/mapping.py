@@ -128,22 +128,12 @@ def fix_person_identifier(text):
 
 def decode_git_path(path):
     """Take a git path and decode it."""
-    try:
-        return path.decode('utf-8')
-    except UnicodeDecodeError:
-        if PY3:
-            return path.decode('utf-8', 'surrogateescape')
-        raise
+    return path.decode('utf-8', 'surrogateescape')
 
 
 def encode_git_path(path):
     """Take a regular path and encode it for git."""
-    try:
-        return path.encode('utf-8')
-    except UnicodeEncodeError:
-        if PY3:
-            return path.encode('utf-8', 'surrogateescape')
-        raise
+    return path.encode('utf-8', 'surrogateescape')
 
 
 def warn_escaped(commit, num_escaped):
