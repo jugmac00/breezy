@@ -362,7 +362,8 @@ class GitLab(Hoster):
         if response.status == 404:
             raise ForkingDisabled(project_name)
         if response.status not in (200, 201):
-            raise errors.UnexpectedHttpStatus(path, response.status)
+            raise errors.UnexpectedHttpStatus(
+                path, '%d: %s' % (response.status, response, reason))
         # The response should be valid JSON, but let's ignore it
         project = json.loads(response.data)
         # Spin and wait until import_status for new project
