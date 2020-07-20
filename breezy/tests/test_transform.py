@@ -85,10 +85,6 @@ from ..transform import (
     TransformRenameFailed,
 )
 
-from ..bzr.transform import (
-    InventoryTreeTransform as TreeTransform,
-    )
-
 
 class TransformGroup(object):
 

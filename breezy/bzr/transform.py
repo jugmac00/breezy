@@ -1449,7 +1449,8 @@ class InventoryTreeTransform(DiskTreeTransform):
                             in (trans_id, None)):
                         use_direct_path = True
                 else:
-                    for l_filename, l_trans_id in self._limbo_children_names[parent].items():
+                    for l_filename, l_trans_id in (
+                            self._limbo_children_names[parent].items()):
                         if l_trans_id == trans_id:
                             continue
                         if l_filename.lower() == filename.lower():

@@ -17,6 +17,11 @@
 """Tree classes, representing directory at point in time.
 """
 
+try:
+    from collections.abc import deque
+except ImportError:  # python < 3.7
+    from collections import deque
+
 import os
 import re
 

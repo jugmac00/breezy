@@ -32,7 +32,6 @@ from . import (
     )
 lazy_import.lazy_import(globals(), """
 from breezy import (
-    cleanup,
     conflicts,
     multiparent,
     revision as _mod_revision,
