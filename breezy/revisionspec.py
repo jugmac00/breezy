@@ -51,6 +51,20 @@ class InvalidRevisionSpec(errors.BzrError):
             self.extra = ''
 
 
+class InvalidRevisionSpec(errors.BzrError):
+
+    _fmt = ("Requested revision: '%(spec)s' does not exist in branch:"
+            " %(branch_url)s%(extra)s")
+
+    def __init__(self, spec, branch, extra=None):
+        errors.BzrError.__init__(self, branch=branch, spec=spec)
+        self.branch_url = getattr(branch, 'user_url', str(branch))
+        if extra:
+            self.extra = '\n' + str(extra)
+        else:
+            self.extra = ''
+
+
 class RevisionInfo(object):
     """The results of applying a revision specification to a branch."""
 
@@ -388,8 +402,7 @@ class RevisionSpec_revno(RevisionSpec):
         if revno_spec == '':
             if not branch_spec:
                 raise InvalidRevisionSpec(
-                    self.user_spec, branch,
-                    'cannot have an empty revno and no branch')
+                    self.user_spec, branch, 'cannot have an empty revno and no branch')
             revno = None
         else:
             try:
@@ -519,9 +532,8 @@ class RevisionSpec_last(RevisionSpec):
             raise InvalidRevisionSpec(self.user_spec, context_branch, e)
 
         if offset <= 0:
-            raise InvalidRevisionSpec(
-                self.user_spec, context_branch,
-                'you must supply a positive value')
+            raise InvalidRevisionSpec(self.user_spec, context_branch,
+                                             'you must supply a positive value')
 
         revno = last_revno - offset + 1
         try:
@@ -564,9 +576,7 @@ class RevisionSpec_before(RevisionSpec):
     def _match_on(self, branch, revs):
         r = RevisionSpec.from_string(self.spec)._match_on(branch, revs)
         if r.revno == 0:
-            raise InvalidRevisionSpec(
-                self.user_spec, branch,
-                'cannot go before the null: revision')
+            raise InvalidRevisionSpec(self.user_spec, branch, 'cannot go before the null: revision')
         if r.revno is None:
             # We need to use the repository history here
             rev = branch.repository.get_revision(r.rev_id)
@@ -599,7 +609,7 @@ class RevisionSpec_before(RevisionSpec):
                 self.user_spec, context_branch, 'cannot find the matching revision')
         parents = parent_map[base_revision_id]
         if len(parents) < 1:
-            raise errors.InvalidRevisionSpec(
+            raise InvalidRevisionSpec(
                 self.user_spec, context_branch, 'No parents for revision.')
         return parents[0]
 
@@ -690,8 +700,7 @@ class RevisionSpec_date(RevisionSpec):
         else:
             m = self._date_regex.match(self.spec)
             if not m or (not m.group('date') and not m.group('time')):
-                raise InvalidRevisionSpec(
-                    self.user_spec, branch, 'invalid date')
+                raise InvalidRevisionSpec(self.user_spec, branch, 'invalid date')
 
             try:
                 if m.group('date'):
@@ -713,8 +722,7 @@ class RevisionSpec_date(RevisionSpec):
                 else:
                     hour, minute, second = 0, 0, 0
             except ValueError:
-                raise InvalidRevisionSpec(
-                    self.user_spec, branch, 'invalid date')
+                raise InvalidRevisionSpec(self.user_spec, branch, 'invalid date')
 
             dt = datetime.datetime(year=year, month=month, day=day,
                                    hour=hour, minute=minute, second=second)
@@ -894,9 +902,8 @@ class RevisionSpec_annotate(RevisionIDSpec):
     """
 
     def _raise_invalid(self, numstring, context_branch):
-        raise InvalidRevisionSpec(
-            self.user_spec, context_branch,
-            'No such line: %s' % numstring)
+        raise InvalidRevisionSpec(self.user_spec, context_branch,
+                                  'No such line: %s' % numstring)
 
     def _as_revision_id(self, context_branch):
         path, numstring = self.spec.rsplit(':', 1)
