@@ -246,7 +246,7 @@ class Launchpad(Hoster):
     @classmethod
     def probe_from_url(cls, url, possible_transports=None):
         if plausible_launchpad_url(url):
-            return Launchpad(lp_uris.LPNET_SERVICE_ROOT)
+            return Launchpad(uris.LPNET_SERVICE_ROOT)
         raise UnsupportedHoster(url)
 
     def _get_lp_git_ref_from_branch(self, branch):
@@ -458,7 +458,7 @@ class Launchpad(Hoster):
     @classmethod
     def iter_instances(cls):
         credential_store = lp_api.get_credential_store()
-        for service_root in uris.service_roots.values():
+        for service_root in set(uris.service_roots.values()):
             auth_engine = lp_api.get_auth_engine(service_root)
             creds = credential_store.load(auth_engine.unique_consumer_id)
             if creds is not None:
