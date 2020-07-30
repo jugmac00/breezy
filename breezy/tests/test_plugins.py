@@ -299,7 +299,7 @@ class TestLoadingPlugins(BaseTestPlugins):
                     "raise IncompatibleVersion(breezy, [(1, 0, 0)], (0, 0, 5))\n")
         log = self.load_and_capture(name, warn_load_problems=False)
         self.assertNotContainsRe(log, r"It supports breezy version")
-        self.assertEqual({'wants100'}, viewkeys(self.plugin_warnings))
+        self.assertEqual({'wants100'}, self.plugin_warnings.keys())
         self.assertContainsRe(
             self.plugin_warnings['wants100'][0],
             r"It supports breezy version")

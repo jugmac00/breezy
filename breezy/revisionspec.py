@@ -402,7 +402,8 @@ class RevisionSpec_revno(RevisionSpec):
         if revno_spec == '':
             if not branch_spec:
                 raise InvalidRevisionSpec(
-                    self.user_spec, branch, 'cannot have an empty revno and no branch')
+                    self.user_spec, branch,
+                    'cannot have an empty revno and no branch')
             revno = None
         else:
             try:
@@ -532,8 +533,9 @@ class RevisionSpec_last(RevisionSpec):
             raise InvalidRevisionSpec(self.user_spec, context_branch, e)
 
         if offset <= 0:
-            raise InvalidRevisionSpec(self.user_spec, context_branch,
-                                             'you must supply a positive value')
+            raise InvalidRevisionSpec(
+                self.user_spec, context_branch,
+                'you must supply a positive value')
 
         revno = last_revno - offset + 1
         try:
@@ -576,7 +578,9 @@ class RevisionSpec_before(RevisionSpec):
     def _match_on(self, branch, revs):
         r = RevisionSpec.from_string(self.spec)._match_on(branch, revs)
         if r.revno == 0:
-            raise InvalidRevisionSpec(self.user_spec, branch, 'cannot go before the null: revision')
+            raise InvalidRevisionSpec(
+                self.user_spec, branch,
+                'cannot go before the null: revision')
         if r.revno is None:
             # We need to use the repository history here
             rev = branch.repository.get_revision(r.rev_id)
@@ -700,7 +704,8 @@ class RevisionSpec_date(RevisionSpec):
         else:
             m = self._date_regex.match(self.spec)
             if not m or (not m.group('date') and not m.group('time')):
-                raise InvalidRevisionSpec(self.user_spec, branch, 'invalid date')
+                raise InvalidRevisionSpec(
+                    self.user_spec, branch, 'invalid date')
 
             try:
                 if m.group('date'):
@@ -722,7 +727,8 @@ class RevisionSpec_date(RevisionSpec):
                 else:
                     hour, minute, second = 0, 0, 0
             except ValueError:
-                raise InvalidRevisionSpec(self.user_spec, branch, 'invalid date')
+                raise InvalidRevisionSpec(
+                    self.user_spec, branch, 'invalid date')
 
             dt = datetime.datetime(year=year, month=month, day=day,
                                    hour=hour, minute=minute, second=second)
@@ -902,8 +908,9 @@ class RevisionSpec_annotate(RevisionIDSpec):
     """
 
     def _raise_invalid(self, numstring, context_branch):
-        raise InvalidRevisionSpec(self.user_spec, context_branch,
-                                  'No such line: %s' % numstring)
+        raise InvalidRevisionSpec(
+            self.user_spec, context_branch,
+            'No such line: %s' % numstring)
 
     def _as_revision_id(self, context_branch):
         path, numstring = self.spec.rsplit(':', 1)
