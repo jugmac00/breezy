@@ -20,9 +20,6 @@ from breezy import (
     osutils,
     trace,
     )
-from .sixish import (
-    StringIO,
-    )
 from .bzr.inventorytree import InventoryTreeChange
 
 

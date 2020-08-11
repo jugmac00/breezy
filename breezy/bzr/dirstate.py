@@ -243,12 +243,6 @@ from .. import (
     trace,
     urlutils,
     )
-from ..sixish import (
-    range,
-    text_type,
-    viewitems,
-    viewvalues,
-    )
 from .inventorytree import InventoryTreeChange
 
 
