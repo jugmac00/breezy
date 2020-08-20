@@ -1465,7 +1465,6 @@ class Merge3Merger(object):
         if self.this_tree.supports_content_filtering():
             filter_tree_path = this_path
         else:
-            # Skip the id2path lookup for older formats
             filter_tree_path = None
 
         file_group = []
