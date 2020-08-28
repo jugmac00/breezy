@@ -128,12 +128,22 @@ def fix_person_identifier(text):
 
 def decode_git_path(path):
     """Take a git path and decode it."""
-    return path.decode('utf-8', 'surrogateescape')
+    try:
+        return path.decode('utf-8')
+    except UnicodeDecodeError:
+        if PY3:
+            return path.decode('utf-8', 'surrogateescape')
+        raise
 
 
 def encode_git_path(path):
     """Take a regular path and encode it for git."""
-    return path.encode('utf-8', 'surrogateescape')
+    try:
+        return path.encode('utf-8')
+    except UnicodeEncodeError:
+        if PY3:
+            return path.encode('utf-8', 'surrogateescape')
+        raise
 
 
 def warn_escaped(commit, num_escaped):
@@ -181,7 +191,7 @@ class BzrGitMapping(foreign.VcsMapping):
         # Git paths are just bytestrings
         # We must just hope they are valid UTF-8..
         if isinstance(path, str):
-            path = encode_git_path(path)
+            path = path.encode("utf-8")
         if path == b"":
             return ROOT_ID
         return FILE_ID_PREFIX + escape_file_id(path)

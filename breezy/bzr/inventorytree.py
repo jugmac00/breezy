@@ -25,7 +25,6 @@ except ImportError:  # python < 3.7
 import os
 import re
 
-from collections import deque
 
 from .. import (
     branch as _mod_branch,
