@@ -27,6 +27,7 @@ from ...tests import (
     )
 from ...tests.test_conflicts import vary_by_conflicts
 
+
 from .. import conflicts as bzr_conflicts
 
 
