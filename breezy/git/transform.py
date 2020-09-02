@@ -380,7 +380,7 @@ class TreeTransformBase(TreeTransform):
 
     def _parent_type_conflicts(self, by_parent):
         """Children must have a directory parent"""
-        for parent_id, children in viewitems(by_parent):
+        for parent_id, children in by_parent.items():
             if parent_id == ROOT_PARENT:
                 continue
             no_children = True
