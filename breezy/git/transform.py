@@ -357,7 +357,7 @@ class TreeTransformBase(TreeTransform):
         """No directory may have two entries with the same name."""
         if (self._new_name, self._new_parent) == ({}, {}):
             return
-        for children in viewvalues(by_parent):
+        for children in by_parent.values():
             name_ids = []
             for child_tid in children:
                 name = self.final_name(child_tid)
