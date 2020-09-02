@@ -144,7 +144,7 @@ class cmd_propose_merge(Command):
             'hoster',
             help='Use the hoster.',
             lazy_registry=('breezy.propose', 'hosters')),
-        ListOption('reviewers', short_name='R', type=text_type,
+        ListOption('reviewers', short_name='R', type=str,
                    help='Requested reviewers.'),
         Option('name', help='Name of the new remote branch.', type=str),
         Option('description', help='Description of the change.', type=str),
