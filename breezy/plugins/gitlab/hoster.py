@@ -122,8 +122,13 @@ class ForkingDisabled(errors.BzrError):
         self.project = project
 
 
-class MergeRequestExists(Exception):
+class MergeRequestExists(errors.BzrError):
     """Raised when a merge requests already exists."""
+
+    _fmt = ("A merge request exists: %(reason)s")
+
+    def __init__(self, reason):
+        self.reason = reason
 
 
 class ProjectCreationTimeout(errors.BzrError):
@@ -523,7 +528,7 @@ class GitLab(Hoster):
         if response.status == 403:
             raise errors.PermissionDenied(response.text)
         if response.status == 409:
-            raise MergeRequestExists()
+            raise MergeRequestExists(response.text)
         if response.status == 422:
             data = json.loads(response.data)
             raise GitLabUnprocessable(data['error'])
