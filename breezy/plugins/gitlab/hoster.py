@@ -18,6 +18,7 @@
 
 import json
 import os
+import re
 import time
 
 from ... import (
@@ -122,10 +123,10 @@ class ForkingDisabled(errors.BzrError):
         self.project = project
 
 
-class MergeRequestExists(errors.BzrError):
+class MergeRequestConflict(errors.BzrError):
     """Raised when a merge requests already exists."""
 
-    _fmt = ("A merge request exists: %(reason)s")
+    _fmt = ("A merge request exists: %(reason)r")
 
     def __init__(self, reason):
         self.reason = reason
@@ -528,7 +529,7 @@ class GitLab(Hoster):
         if response.status == 403:
             raise errors.PermissionDenied(response.text)
         if response.status == 409:
-            raise MergeRequestExists(response.text)
+            raise MergeRequestConflict(json.loads(response.data))
         if response.status == 422:
             data = json.loads(response.data)
             raise GitLabUnprocessable(data['error'])
@@ -755,8 +756,18 @@ class GitlabMergeProposalBuilder(MergeProposalBuilder):
                 kwargs['assignee_ids'].append(user['id'])
         try:
             merge_request = self.gl._create_mergerequest(**kwargs)
-        except MergeRequestExists:
-            raise MergeProposalExists(self.source_branch.user_url)
+        except MergeRequestConflict as e:
+            m = re.fullmatch(
+                r'Another open merge request already exists for '
+                r'this source branch: \!([0-9]+)',
+                e.reason['message'][0])
+            if m:
+                merge_id = int(m.group(1))
+                mr = self.gl._get_merge_request(
+                    target_project['path_with_namespace'], merge_id)
+                raise MergeProposalExists(
+                    self.source_branch.user_url, GitLabMergeProposal(self.gl, mr))
+            raise Exception('conflict: %r' % e.reason)
         except GitLabUnprocessable as e:
             if e.error == [
                     "Source project is not a fork of the target project"]:
