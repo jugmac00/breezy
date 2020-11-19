@@ -16,6 +16,8 @@
 
 """Helper functions for proposing merges."""
 
+import re
+
 from . import (
     errors,
     hooks,
@@ -386,7 +388,13 @@ class Hoster(object):
 
 def determine_title(description):
     """Determine the title for a merge proposal based on full description."""
-    return description.splitlines()[0].split('.')[0]
+    firstline = description.splitlines()[0]
+    try:
+        i = firstline.index('. ')
+    except ValueError:
+        return firstline.rstrip('.')
+    else:
+        return firstline[:i]
 
 
 def get_hoster(branch, possible_hosters=None):
