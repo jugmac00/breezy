@@ -28,7 +28,6 @@ Specific tests for individual variations are in other places such as:
 import contextlib
 
 from breezy import (
-    cleanup,
     errors,
     tests,
     transform,

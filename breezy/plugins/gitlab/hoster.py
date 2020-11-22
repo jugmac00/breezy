@@ -123,8 +123,21 @@ class ForkingDisabled(errors.BzrError):
         self.project = project
 
 
-class MergeRequestConflict(errors.BzrError):
-    """Raised when a merge requests already exists."""
+class MergeRequestConflict(Exception):
+    """Raised when a merge requests conflicts."""
+
+    def __init__(self, reason):
+        self.reason = reason
+
+
+class ProjectCreationTimeout(errors.BzrError):
+
+    _fmt = ("Timeout (%(timeout)ds) while waiting for project "
+            "%(project)s to be created.")
+
+    def __init__(self, project, timeout):
+        self.project = project
+        self.timeout = timeout
 
     _fmt = ("A merge request exists: %(reason)r")
 

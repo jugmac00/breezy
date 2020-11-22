@@ -178,9 +178,6 @@ class RemoteGitProber(Prober):
             # GitHub requires we lie.
             # https://github.com/dulwich/dulwich/issues/562
             headers["User-Agent"] = user_agent_for_github()
-        elif host == "bazaar.launchpad.net":
-            # Don't attempt Git probes against bazaar.launchpad.net; pad.lv/1744830
-            raise brz_errors.NotBranchError(transport.base)
         resp = transport.request('GET', url, headers=headers)
         if resp.status in (404, 405):
             raise brz_errors.NotBranchError(transport.base)
@@ -423,7 +420,7 @@ def post_commit_update_cache(local_branch, master_branch, old_revno, old_revid,
 def loggerhead_git_hook(branch_app, environ):
     branch = branch_app.branch
     config_stack = branch.get_config_stack()
-    if config_stack.get('http_git'):
+    if not config_stack.get('git.http'):
         return None
     from .server import git_http_hook
     return git_http_hook(branch, environ['REQUEST_METHOD'],
