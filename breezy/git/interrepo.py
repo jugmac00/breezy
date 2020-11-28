@@ -738,7 +738,7 @@ class InterLocalGitLocalGitRepository(InterGitGitRepository):
 
         (pack_hint, last_rev, remote_refs) = self.fetch_objects(
             determine_wants, limit=limit, lossy=lossy)
-        return {}
+        return None
 
     def fetch_objects(self, determine_wants, mapping=None, limit=None,
                       lossy=False):
