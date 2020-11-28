@@ -729,17 +729,6 @@ class InterGitGitRepository(InterFromGitRepository):
 
 class InterLocalGitLocalGitRepository(InterGitGitRepository):
 
-    def fetch_revs(self, revs, lossy, limit=None):
-        def determine_wants(refs):
-            wants = []
-            for (git_sha, bzr_revid) in revs:
-                wants.append(git_sha)
-            return wants
-
-        (pack_hint, last_rev, remote_refs) = self.fetch_objects(
-            determine_wants, limit=limit, lossy=lossy)
-        return None
-
     def fetch_objects(self, determine_wants, mapping=None, limit=None,
                       lossy=False):
         if lossy:
