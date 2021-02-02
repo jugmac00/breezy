@@ -139,21 +139,6 @@ class ProjectCreationTimeout(errors.BzrError):
         self.project = project
         self.timeout = timeout
 
-    _fmt = ("A merge request exists: %(reason)r")
-
-    def __init__(self, reason):
-        self.reason = reason
-
-
-class ProjectCreationTimeout(errors.BzrError):
-
-    _fmt = ("Timeout (%(timeout)ds) while waiting for project "
-            "%(project)s to be created.")
-
-    def __init__(self, project, timeout):
-        self.project = project
-        self.timeout = timeout
-
 
 def default_config_path():
     return os.path.join(bedding.config_dir(), 'gitlab.conf')
