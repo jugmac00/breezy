@@ -407,7 +407,15 @@ class GitLab(Hoster):
             return json.loads(response.data)
         _unexpected_status(path, response)
 
-    def _fork_project(self, project_name, timeout=50, interval=5, owner=None):
+    def create_project(self, project_name):
+        fields = {'name': project_name}
+        response = self._api_request('POST', 'projects', fields=fields)
+        if response.status not in (200, 201):
+            _unexpected_status('projects', response)
+        project = json.loads(response.data)
+        return project
+
+    def fork_project(self, project_name, timeout=50, interval=5, owner=None):
         path = 'projects/%s/fork' % urlutils.quote(str(project_name), '')
         fields = {}
         if owner is not None:
@@ -555,7 +563,7 @@ class GitLab(Hoster):
         try:
             target_project = self._get_project('%s/%s' % (owner, project))
         except NoSuchProject:
-            target_project = self._fork_project(
+            target_project = self.fork_project(
                 base_project['path_with_namespace'], owner=owner)
         remote_repo_url = git_url_to_bzr_url(target_project['ssh_url_to_repo'])
         remote_dir = controldir.ControlDir.open(remote_repo_url)
