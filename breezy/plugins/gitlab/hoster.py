@@ -112,9 +112,9 @@ class GitLabConflict(errors.BzrError):
 
     _fmt = "Conflict during operation: %(message)s"
 
-    def __init__(self, message):
+    def __init__(self, reason):
         errors.BzrError(self)
-        self.message = message
+        self.reason = reason
 
 
 class ForkingDisabled(errors.BzrError):
@@ -235,7 +235,7 @@ class GitLabMergeProposal(MergeProposal):
                 self._mr['project_id'], self._mr['iid'], kwargs)
         except GitLabConflict as e:
             self.gl._handle_merge_request_conflict(
-                e.message, self.get_source_branch_url(),
+                e.reason, self.get_source_branch_url(),
                 self._mr['target_project_id'])
 
     def __repr__(self):
@@ -310,7 +310,7 @@ class GitLabMergeProposal(MergeProposal):
         elif self._mr['merge_status'] == 'can_be_merged':
             return True
         elif self._mr['merge_status'] in (
-                'unchecked', 'cannot_be_merged_recheck'):
+                'unchecked', 'cannot_be_merged_recheck', 'checking'):
             # See https://gitlab.com/gitlab-org/gitlab/-/commit/7517105303c for
             # an explanation of the distinction between unchecked and
             # cannot_be_merged_recheck
@@ -700,7 +700,7 @@ class GitLab(Hoster):
             yield GitLabMergeProposal(self, mp)
 
     def iter_my_forks(self, owner=None):
-        if owner is not None:
+        if owner is None:
             owner = self.get_current_user()
         for project in self._list_projects(owner=owner):
             base_project = project.get('forked_from_project')
@@ -799,7 +799,7 @@ class GitlabMergeProposalBuilder(MergeProposalBuilder):
             merge_request = self.gl._create_mergerequest(**kwargs)
         except GitLabConflict as e:
             self.gl._handle_merge_request_conflict(
-                e.message, self.source_branch.user_url,
+                e.reason, self.source_branch.user_url,
                 target_project['path_with_namespace'])
         except GitLabUnprocessable as e:
             if e.error == [
