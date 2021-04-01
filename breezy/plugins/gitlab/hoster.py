@@ -677,14 +677,14 @@ class GitLab(Hoster):
             response = self._api_request('GET', 'user')
         except errors.UnexpectedHttpStatus as e:
             if e.code == 401:
-                raise GitLabLoginMissing()
+                raise GitLabLoginMissing(hoster=self)
             raise
         if response.status == 200:
             self._current_user = json.loads(response.data)
             return
         if response.status == 401:
             if json.loads(response.data) == {"message": "401 Unauthorized"}:
-                raise GitLabLoginMissing()
+                raise GitLabLoginMissing(hoster=self)
             else:
                 raise GitlabLoginError(response.text)
         raise UnsupportedHoster(self.base_url)
@@ -709,7 +709,7 @@ class GitLab(Hoster):
             if not resp.getheader('X-Gitlab-Feature-Category'):
                 raise UnsupportedHoster(url)
             if resp.status in (200, 401):
-                raise GitLabLoginMissing()
+                raise GitLabLoginMissing(hoster=host)
             raise UnsupportedHoster(url)
 
     @classmethod
