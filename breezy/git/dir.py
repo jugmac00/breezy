@@ -161,7 +161,8 @@ class GitDir(ControlDir):
             result = ControlDir.open_from_transport(target_transport)
         except brz_errors.NotBranchError:
             result = cloning_format.initialize_on_transport(target_transport)
-        source_branch = self.open_branch()
+        if source_branch is None:
+            source_branch = self.open_branch()
         source_repository = self.find_repository()
         try:
             result_repo = result.find_repository()
