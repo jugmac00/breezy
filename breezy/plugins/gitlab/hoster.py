@@ -428,8 +428,24 @@ class GitLab(Hoster):
         _unexpected_status(path, response)
 
     def create_project(self, project_name):
-        fields = {'name': project_name}
+        if project_name.endswith('.git'):
+            project_name = project_name[:-4]
+        if '/' in project_name:
+            namespace, path = project_name.rsplit('/', 1)
+        else:
+            namespace = None
+            path = project_name
+        fields = {
+            'path': path,
+            'name': path.replace('-', '_'),
+            'namespace_path': namespace,
+            }
         response = self._api_request('POST', 'projects', fields=fields)
+        if response.status == 400:
+            ret = json.loads(response.data)
+            if ret.get("message", {}).get("path") == ["has already been taken"]:
+                raise errors.AlreadyControlDirError(project_name)
+            raise
         if response.status == 403:
             raise errors.PermissionDenied(response.text)
         if response.status not in (200, 201):
@@ -677,14 +693,14 @@ class GitLab(Hoster):
             response = self._api_request('GET', 'user')
         except errors.UnexpectedHttpStatus as e:
             if e.code == 401:
-                raise GitLabLoginMissing(hoster=self)
+                raise GitLabLoginMissing(self.base_url)
             raise
         if response.status == 200:
             self._current_user = json.loads(response.data)
             return
         if response.status == 401:
             if json.loads(response.data) == {"message": "401 Unauthorized"}:
-                raise GitLabLoginMissing(hoster=self)
+                raise GitLabLoginMissing(self.base_url)
             else:
                 raise GitlabLoginError(response.text)
         raise UnsupportedHoster(self.base_url)
@@ -709,7 +725,7 @@ class GitLab(Hoster):
             if not resp.getheader('X-Gitlab-Feature-Category'):
                 raise UnsupportedHoster(url)
             if resp.status in (200, 401):
-                raise GitLabLoginMissing(hoster=host)
+                raise GitLabLoginMissing('https://%s/' % host)
             raise UnsupportedHoster(url)
 
     @classmethod
