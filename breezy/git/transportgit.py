@@ -20,6 +20,7 @@ from io import BytesIO
 
 import os
 import sys
+import posixpath
 
 from dulwich.errors import (
     NoIndexPresent,
@@ -101,12 +102,7 @@ class TransportRefsContainer(RefsContainer):
         return "%s(%r)" % (self.__class__.__name__, self.transport)
 
     def _ensure_dir_exists(self, path):
-        for n in range(path.count("/")):
-            dirname = "/".join(path.split("/")[:n + 1])
-            try:
-                self.transport.mkdir(dirname)
-            except FileExists:
-                pass
+        self.transport.clone(posixpath.dirname(path)).create_prefix()
 
     def subkeys(self, base):
         """Refs present in this container under a base.
@@ -272,6 +268,7 @@ class TransportRefsContainer(RefsContainer):
         :param new_ref: The new sha the refname will refer to.
         :return: True if the set was successful, False otherwise.
         """
+        self._check_refname(name)
         try:
             realnames, _ = self.follow(name)
             realname = realnames[-1]
