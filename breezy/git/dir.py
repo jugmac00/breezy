@@ -638,7 +638,12 @@ class LocalGitDir(GitDir):
         if not nascent_ok and ref not in self._git.refs:
             raise brz_errors.NotBranchError(
                 self.root_transport.base, controldir=self)
-        ref_chain, unused_sha = self._git.refs.follow(ref)
+        try:
+            ref_chain, unused_sha = self._git.refs.follow(ref)
+        except KeyError as e:
+            raise brz_errors.NotBranchError(
+                self.root_transport.base, controldir=self,
+                detail='intermediate ref %s missing' % e.args[0])
         if ref_chain[-1] == b'HEAD':
             controldir = self
         else:
