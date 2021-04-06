@@ -122,7 +122,7 @@ class GitlabLoginError(errors.BzrError):
 
 class GitLabConflict(errors.BzrError):
 
-    _fmt = "Conflict during operation: %(message)s"
+    _fmt = "Conflict during operation: %(reason)s"
 
     def __init__(self, reason):
         errors.BzrError(self)
