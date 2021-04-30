@@ -34,6 +34,7 @@ from dulwich.index import (
     commit_tree,
     index_entry_from_stat,
     Index,
+    IndexEntry,
     )
 from dulwich.object_store import (
     tree_lookup_path,
@@ -1381,7 +1382,7 @@ class MutableGitIndexTree(mutabletree.MutableTree, GitTree):
             raise TypeError(name)
         if not isinstance(path, str):
             raise TypeError(path)
-        if not isinstance(value, tuple) or len(value) != 10:
+        if not isinstance(value, tuple) and not isinstance(value, IndexEntry):
             raise TypeError(value)
         file_id = self.path2id(path)
         if not isinstance(file_id, bytes):
