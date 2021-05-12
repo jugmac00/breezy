@@ -721,6 +721,9 @@ class GitLab(Hoster):
                 'GET', 'https://%s/api/v4/projects/%s' % (host, urlutils.quote(str(project), '')))
         except errors.UnexpectedHttpStatus as e:
             raise UnsupportedHoster(url)
+        except errors.RedirectRequested:
+            # GitLab doesn't send redirects for these URLs
+            raise UnsupportedHoster(url)
         else:
             if not resp.getheader('X-Gitlab-Feature-Category'):
                 raise UnsupportedHoster(url)
