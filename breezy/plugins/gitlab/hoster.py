@@ -593,7 +593,7 @@ class GitLab(Hoster):
             raise GitLabConflict(json.loads(response.data).get('message'))
         if response.status == 422:
             data = json.loads(response.data)
-            raise GitLabUnprocessable(data.get('error'), data)
+            raise GitLabUnprocessable(data.get('error') or data, data)
         if response.status != 201:
             _unexpected_status(path, response)
         return json.loads(response.data)
@@ -721,6 +721,9 @@ class GitLab(Hoster):
             resp = transport.request(
                 'GET', 'https://%s/api/v4/projects/%s' % (host, urlutils.quote(str(project), '')))
         except errors.UnexpectedHttpStatus as e:
+            raise UnsupportedHoster(url)
+        except errors.RedirectRequested:
+            # GitLab doesn't send redirects for these URLs
             raise UnsupportedHoster(url)
         else:
             if not resp.getheader('X-Gitlab-Feature-Category'):
