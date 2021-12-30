@@ -35,7 +35,6 @@ import breezy
 from breezy import (
     branch as _mod_branch,
     bugtracker,
-    cache_utf8,
     controldir,
     directory_service,
     delta,
@@ -457,7 +456,7 @@ class cmd_cat_revision(Command):
         with b.repository.lock_read():
             # TODO: jam 20060112 should cat-revision always output utf-8?
             if revision_id is not None:
-                revision_id = cache_utf8.encode(revision_id)
+                revision_id = revision_id.encode('utf-8')
                 try:
                     self.print_revision(revisions, revision_id)
                 except errors.NoSuchRevision:
@@ -2660,10 +2659,10 @@ class cmd_log(Command):
     :Tips & tricks:
 
       GUI tools and IDEs are often better at exploring history than command
-      line tools: you may prefer qlog or viz from qbzr or bzr-gtk, the
-      bzr-explorer shell, or the Loggerhead web interface.  See the Bazaar
-      Plugin Guide <http://doc.bazaar.canonical.com/plugins/en/> and
-      <http://wiki.bazaar.canonical.com/IDEIntegration>.
+      line tools: you may prefer qlog or viz from qbzr or brz-gtk, the
+      bzr-explorer shell, or the Loggerhead web interface.  See the Breezy
+      Plugin Guide <https://www.breezy-vcs.org/doc/plugins/en/> and
+      <http://wiki.breezy-vcs.org/IDEIntegration>.
 
       You may find it useful to add the aliases below to ``breezy.conf``::
 
@@ -5209,7 +5208,7 @@ class cmd_plugins(Command):
     adding new commands, providing additional network transports and
     customizing log output.
 
-    See the Bazaar Plugin Guide <http://doc.bazaar.canonical.com/plugins/en/>
+    See the Bazaar Plugin Guide <https://www.breezy-vcs.org/doc/plugins/en/>
     for further information on plugins including where to find them and how to
     install them. Instructions are also provided there on how to write new
     plugins using the Python programming language.
@@ -5332,7 +5331,7 @@ class cmd_re_sign(Command):
         if revision_id_list is not None:
             with WriteGroup(b.repository):
                 for revision_id in revision_id_list:
-                    revision_id = cache_utf8.encode(revision_id)
+                    revision_id = revision_id.encode('utf-8')
                     b.repository.sign_revision(revision_id, gpg_strategy)
         elif revision is not None:
             if len(revision) == 1:
