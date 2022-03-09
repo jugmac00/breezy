@@ -595,7 +595,7 @@ class GitLab(Hoster):
             raise GitLabConflict(json.loads(response.data).get('message'))
         if response.status == 422:
             data = json.loads(response.data)
-            raise GitLabUnprocessable(data.get('error') or data, data)
+            raise GitLabUnprocessable(data.get('error') or data.get('message') or data, data)
         if response.status != 201:
             _unexpected_status(path, response)
         return json.loads(response.data)
