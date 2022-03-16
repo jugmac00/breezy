@@ -414,7 +414,7 @@ class DefaultProgressReporter(object):
                     trace.note("%s", text)
 
 
-_LOCK_REF_ERROR_MATCHER = re.compile(b'cannot lock ref \'(.*)\': (.*)')
+_LOCK_REF_ERROR_MATCHER = re.compile('cannot lock ref \'(.*)\': (.*)')
 
 
 class RemoteGitDir(GitDir):
