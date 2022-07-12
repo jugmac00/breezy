@@ -221,6 +221,8 @@ def parse_git_error(url, message):
         return TransportError('Host key verification failed')
     if message == '[Errno 104] Connection reset by peer':
         return ConnectionReset(message)
+    if message == 'The remote server unexpectedly closed the connection.':
+        return TransportError(message)
     # Don't know, just return it to the user as-is
     return RemoteGitError(message)
 
@@ -233,7 +235,7 @@ def parse_git_hangup(url, e):
     """
     stderr_lines = getattr(e, 'stderr_lines', None)
     if not stderr_lines:
-        return e
+        return ConnectionReset('Connection closed early', e)
     if all(line.startswith(b'remote: ') for line in stderr_lines):
         stderr_lines = [
             line[len(b'remote: '):] for line in stderr_lines]
@@ -395,7 +397,7 @@ class DefaultProgressReporter(object):
         text = text.rstrip(b"\r\n")
         text = text.decode('utf-8', 'surrogateescape')
         if text.lower().startswith('error: '):
-            error = text[len(b'error: '):]
+            error = text[len('error: '):]
             self.errors.append(error)
             trace.show_error('git: %s', error)
         else:
