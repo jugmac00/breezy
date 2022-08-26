@@ -75,6 +75,15 @@ from .mapping import (
 from ..bzr.inventorytree import InventoryTreeChange
 
 
+class RemoteSubmodule(errors.InternalBzrError):
+    
+    _fmt = "Submodule is not available locally. Remote URL: %(url)s"
+
+    def __init__(self, url):
+        super(RemoteSubmodule, self).__init__()
+        self.url = url
+
+
 class GitTreeDirectory(_mod_tree.TreeDirectory):
 
     __slots__ = ['file_id', 'name', 'parent_id']
@@ -353,6 +362,8 @@ class GitRevisionTree(revisiontree.RevisionTree, GitTree):
             if not nested_repo_transport.has('.'):
                 nested_repo_transport = self._repository.controldir.user_transport.clone(
                     posixpath.join(decode_git_path(info[1]), '.git'))
+            if not nested_repo_transport.has('.'):
+                raise RemoteSubmodule(info[0].decode('utf-8'))
         nested_controldir = _mod_controldir.ControlDir.open_from_transport(
             nested_repo_transport)
         return nested_controldir.find_repository()
