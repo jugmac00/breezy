@@ -44,6 +44,7 @@ from ..remote import (
     parse_git_error,
     parse_git_hangup,
     HeadUpdateFailed,
+    ProtectedBranchHookDeclined,
     RemoteGitError,
     RemoteGitBranchFormat,
     _git_url_and_path_from_transport,
@@ -96,6 +97,11 @@ class ParseGitErrorTests(TestCase):
     def test_unknown(self):
         e = parse_git_error("url", "foo")
         self.assertIsInstance(e, RemoteGitError)
+
+    def test_connection_closed(self):
+        e = parse_git_error(
+            "url", "The remote server unexpectedly closed the connection.")
+        self.assertIsInstance(e, TransportError)
 
     def test_notbrancherror(self):
         e = parse_git_error("url", "\n Could not find Repository foo/bar")
@@ -166,6 +172,15 @@ Email support@github.com for help
                     'GitLab: You are not allowed to push code to '
                     'protected branches on this project.')))
 
+    def test_protected_branch(self):
+        self.assertEqual(
+            ProtectedBranchHookDeclined(
+                msg='protected branch hook declined'),
+            parse_git_error(
+                'url',
+                RemoteGitError(
+                    'protected branch hook declined')))
+
     def test_host_key_verification(self):
         self.assertEqual(
             TransportError('Host key verification failed'),
@@ -194,7 +209,7 @@ class ParseHangupTests(TestCase):
 
     def test_not_set(self):
         self.assertIsInstance(
-            parse_git_hangup('http://', HangupException()), HangupException)
+            parse_git_hangup('http://', HangupException()), ConnectionReset)
 
     def test_single_line(self):
         self.assertEqual(
