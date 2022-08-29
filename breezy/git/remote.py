@@ -594,16 +594,15 @@ class RemoteGitDir(GitDir):
         repo = self.open_repository()
         ref = self._get_selected_ref(name, ref)
         try:
-            if not nascent_ok and ref not in self.get_refs_container():
-                raise NotBranchError(
-                    self.root_transport.base, controldir=self)
-        except NotGitRepository:
-            raise NotBranchError(self.root_transport.base,
-                                 controldir=self)
-        try:
             ref_chain, sha = self.get_refs_container().follow(ref)
         except SymrefLoop:
             raise _mod_controldir.BranchReferenceLoop(self)
+        except NotGitRepository:
+            raise NotBranchError(self.root_transport.base,
+                                 controldir=self)
+        if not nascent_ok and sha is None:
+            raise NotBranchError(
+                self.root_transport.base, controldir=self)
         return RemoteGitBranch(self, repo, ref_chain[-1], sha)
 
     def open_workingtree(self, recommend_upgrade=False):
