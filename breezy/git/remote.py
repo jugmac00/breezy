@@ -26,6 +26,7 @@ except ImportError:
 
 from .. import (
     config,
+    controldir as _mod_controldir,
     debug,
     errors,
     osutils,
@@ -602,7 +603,7 @@ class RemoteGitDir(GitDir):
         try:
             ref_chain, sha = self.get_refs_container().follow(ref)
         except SymrefLoop:
-            raise BranchReferenceLoop(self)
+            raise _mod_controldir.BranchReferenceLoop(self)
         return RemoteGitBranch(self, repo, ref_chain[-1], sha)
 
     def open_workingtree(self, recommend_upgrade=False):
