@@ -51,6 +51,7 @@ from dulwich.pack import (
     compute_file_sha,
     write_pack_object,
     )
+from dulwich.refs import SymrefLoop
 from dulwich.repo import (
     BaseRepo,
     InfoRefsContainer,
@@ -274,7 +275,7 @@ class TransportRefsContainer(RefsContainer):
         try:
             realnames, _ = self.follow(name)
             realname = realnames[-1]
-        except (KeyError, IndexError):
+        except (KeyError, IndexError, SymrefLoop):
             realname = name
         if realname == b'HEAD':
             transport = self.worktree_transport
