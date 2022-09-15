@@ -34,6 +34,7 @@ from .. import (
     ui,
     urlutils,
     )
+from ..controldir import BranchReferenceLoop
 from ..push import (
     PushResult,
     )
