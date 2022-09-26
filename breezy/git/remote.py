@@ -836,6 +836,7 @@ class BzrGitHttpClient(dulwich.client.HttpGitClient):
             `redirect_location` properties, and `read` is a consumable read
             method for the response data.
         """
+        from breezy.transport.http.urllib import IncompleteRead
         if is_github_url(url):
             headers['User-agent'] = user_agent_for_github()
         headers["Pragma"] = "no-cache"
@@ -852,7 +853,11 @@ class BzrGitHttpClient(dulwich.client.HttpGitClient):
             raise GitProtocolError("unexpected http resp %d for %s" %
                                    (response.status, url))
 
-        read = response.read
+        def read(amt=None):
+            try:
+                return response.read(amt)
+            except IncompleteRead as e:
+                return e.partial
 
         class WrapResponse(object):
 
