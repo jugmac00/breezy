@@ -86,7 +86,7 @@ class build_man(Command):
 ## Setup
 ########################
 
-from setuptools.command.build import build
+from distutils.command.build import build
 build.sub_commands.append(('build_mo', lambda _: True))
 
 command_classes = {
