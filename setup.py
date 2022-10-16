@@ -27,8 +27,6 @@ except ModuleNotFoundError as e:
 # NOTE: The directory containing setup.py, whether run by 'python setup.py' or
 # './setup.py' or the equivalent with another path, should always be at the
 # start of the path, so this should find the right one...
-import breezy
-
 I18N_FILES = []
 for filepath in glob.glob("breezy/locale/*/LC_MESSAGES/*.mo"):
     langfile = filepath[len("breezy/locale/"):]
@@ -87,8 +85,6 @@ class build_man(Command):
 ########################
 ## Setup
 ########################
-
-from breezy.bzr_distutils import build_mo
 
 from setuptools.command.build import build
 build.sub_commands.append(('build_mo', lambda _: True))
