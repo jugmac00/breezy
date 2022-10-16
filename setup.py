@@ -68,27 +68,18 @@ class brz_build_scripts(build_scripts):
                     os.path.join(self.build_dir, ext.name))
 
 
-class brz_install(install):
-    """Turns out easy_install was always just a bad idea."""
+from distutils.core import Command
+
+
+class build_man(Command):
+
+    def initialize_options(self):
+        pass
 
     def finalize_options(self):
-        install.finalize_options(self)
-        # Get us off the do_egg_install() path
-        self.single_version_externally_managed = True
-
-
-class bzr_build(build):
-    """Customized build distutils action.
-    Generate brz.1.
-    """
-
-    sub_commands = build.sub_commands + [
-        ('build_mo', lambda _: True),
-        ]
+        pass
 
     def run(self):
-        build.run(self)
-
         from tools import generate_docs
         generate_docs.main(argv=["brz", "man"])
 
@@ -99,11 +90,12 @@ class bzr_build(build):
 
 from breezy.bzr_distutils import build_mo
 
+from setuptools.command.build import build
+build.sub_commands.append(('build_mo', lambda _: True))
+
 command_classes = {
-    'build': bzr_build,
-    'build_mo': build_mo,
+    'build_man': build_man,
     'build_scripts': brz_build_scripts,
-    'install': brz_install,
 }
 
 from distutils import log
@@ -252,9 +244,10 @@ if unavailable_files:
 
 # ad-hoc for easy_install
 DATA_FILES = []
-if 'bdist_egg' not in sys.argv:
+if 'bdist_egg' not in sys.argv and 'bdist_wheel' not in sys.argv:
     # generate and install brz.1 only with plain install, not the
     # easy_install one
+    build.sub_commands.append(('build_man', lambda _: True))
     DATA_FILES = [('man/man1', ['brz.1', 'breezy/git/git-remote-bzr.1'])]
 
 DATA_FILES = DATA_FILES + I18N_FILES
